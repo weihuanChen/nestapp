@@ -2,6 +2,8 @@ import { resolve } from 'path';
 
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+import { PostEntity } from '@/modules/content/entities/post.entity';
+
 export const database = (): TypeOrmModuleOptions => ({
     // mysql
     // charset: 'utf8mb4',
@@ -17,4 +19,5 @@ export const database = (): TypeOrmModuleOptions => ({
     database: resolve(__dirname, '../../database.db'),
     synchronize: true,
     autoLoadEntities: true,
+    entities: [PostEntity],
 });
