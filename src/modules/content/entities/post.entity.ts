@@ -50,5 +50,5 @@ export class PostEntity {
     @UpdateDateColumn({
         comment: '更新时间',
     })
-    updateAt: Date;
+    updatedAt: Date;
 }
