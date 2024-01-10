@@ -8,10 +8,10 @@ import {
     Patch,
     Post,
     Query,
+    ValidationPipe,
 } from '@nestjs/common';
 
-import { PaginateOptions } from '@/modules/database/types';
-
+import { CreatePostDto, QueryPostDto, UpdatePostDto } from '../dtos';
 import { PostService } from '../services';
 
 // src/modules/content/controllers/post.controller.ts
@@ -22,8 +22,16 @@ export class PostController {
 
     @Get()
     async list(
-        @Query()
-        options: PaginateOptions,
+        @Query(
+            new ValidationPipe({
+                transform: true, // 验证前先转换为DTO实例
+                whitelist: true, // 过滤掉没有添加验证器的多余属性
+                forbidNonWhitelisted: true, // 多余属性传入抛403
+                forbidUnknownValues: true,
+                validationError: { target: false },
+            }),
+        )
+        options: QueryPostDto,
     ) {
         return this.service.paginate(options);
     }
@@ -38,16 +46,34 @@ export class PostController {
 
     @Post()
     async store(
-        @Body()
-        data: Record<string, any>,
+        @Body(
+            new ValidationPipe({
+                transform: true,
+                whitelist: true,
+                forbidNonWhitelisted: true,
+                forbidUnknownValues: true,
+                validationError: { target: false },
+                groups: ['create'],
+            }),
+        )
+        data: CreatePostDto,
     ) {
         return this.service.create(data);
     }
 
     @Patch()
     async update(
-        @Body()
-        data: Record<string, any>,
+        @Body(
+            new ValidationPipe({
+                transform: true,
+                whitelist: true,
+                forbidNonWhitelisted: true,
+                forbidUnknownValues: true,
+                validationError: { target: false },
+                groups: ['update'],
+            }),
+        )
+        data: UpdatePostDto,
     ) {
         return this.service.update(data);
     }
