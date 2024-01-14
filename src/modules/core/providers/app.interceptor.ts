@@ -8,7 +8,7 @@ import { isObject, isArray } from 'class-validator';
 import { isNil } from 'lodash';
 
 // 序列化分页拦截器
-export class AppInterceptor extends ClassSerializerInterceptor {
+export class AppIntercepter extends ClassSerializerInterceptor {
     serialize(
         response: PlainLiteralObject | PlainLiteralObject[],
         options: ClassSerializerContextOptions,

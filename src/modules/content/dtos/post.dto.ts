@@ -8,6 +8,7 @@ import {
     IsNotEmpty,
     IsNumber,
     IsOptional,
+    IsUUID,
     MaxLength,
     Min,
     ValidateIf,
@@ -46,6 +47,14 @@ export class QueryPostDto implements PaginateOptions {
     @IsNumber()
     @IsOptional()
     limit: number = 10;
+
+    @IsUUID(undefined, { message: 'ID格式错误' })
+    @IsOptional()
+    category?: string;
+
+    @IsUUID(undefined, { message: 'ID格式错误' })
+    @IsOptional()
+    tag?: string;
 }
 
 /**
@@ -91,6 +100,23 @@ export class CreatePostDto {
     @IsNumber(undefined, { always: true })
     @IsOptional({ always: true })
     customOrder = 0;
+
+    @IsUUID(undefined, {
+        each: true,
+        always: true,
+        message: 'ID格式不正确',
+    })
+    @IsOptional({ groups: ['update'] })
+    category: string;
+
+    @IsUUID(undefined, {
+        each: true,
+        always: true,
+        message: 'ID格式不正确',
+    })
+    @IsNotEmpty({ groups: ['create'], message: '分类必须设置' })
+    @IsOptional({ always: true })
+    tags?: string[];
 }
 // PartialType 使包含的内容中可选
 export class UpdatePostDto extends PartialType(CreatePostDto) {
@@ -98,4 +124,21 @@ export class UpdatePostDto extends PartialType(CreatePostDto) {
     @IsNumber(undefined, { groups: ['update'], message: '帖子ID格式错误' })
     @IsDefined({ groups: ['update'], message: '帖子ID必须指定' })
     id: string;
+
+    @IsUUID(undefined, {
+        each: true,
+        always: true,
+        message: 'ID格式不正确',
+    })
+    @IsOptional({ groups: ['update'] })
+    category: string;
+
+    @IsUUID(undefined, {
+        each: true,
+        always: true,
+        message: 'ID格式不正确',
+    })
+    @IsNotEmpty({ groups: ['create'], message: '分类必须设置' })
+    @IsOptional({ always: true })
+    tags?: string[];
 }

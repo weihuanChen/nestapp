@@ -1,11 +1,27 @@
 import { Expose } from 'class-transformer';
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryColumn,
+    Relation,
+    UpdateDateColumn,
+} from 'typeorm';
 
 import { PostBodyType } from '../constants';
 
+import { CategoryEntity } from './category.entity';
+import { CommentEntity } from './comment.entity';
+import { TagEntity } from './tag.entity';
+
 // 文章实体
 @Entity('content_post')
-export class PostEntity {
+export class PostEntity extends BaseEntity {
     @Expose()
     @PrimaryColumn({ type: 'varchar', generated: 'uuid', length: 36 })
     id: string;
@@ -62,4 +78,23 @@ export class PostEntity {
         comment: '更新时间',
     })
     updatedAt: Date;
+
+    @Expose()
+    @ManyToOne(() => CategoryEntity, (category) => category.posts, {
+        nullable: true,
+        onDelete: 'SET NULL',
+    })
+    category: Relation<CategoryEntity>;
+
+    @Expose()
+    @ManyToMany(() => TagEntity, (tag) => tag.posts, {
+        cascade: true,
+    })
+    @JoinTable()
+    tags: Relation<TagEntity>[];
+
+    @OneToMany(() => CommentEntity, (comment) => comment.post, {
+        cascade: true,
+    })
+    comments: Relation<CommentEntity>[];
 }
