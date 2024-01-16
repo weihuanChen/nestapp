@@ -8,7 +8,6 @@ import {
     Patch,
     Post,
     Query,
-    ValidationPipe,
 } from '@nestjs/common';
 
 import { CreatePostDto, QueryPostDto, UpdatePostDto } from '../dtos';
@@ -22,15 +21,7 @@ export class PostController {
 
     @Get()
     async list(
-        @Query(
-            new ValidationPipe({
-                transform: true, // 验证前先转换为DTO实例
-                whitelist: true, // 过滤掉没有添加验证器的多余属性
-                forbidNonWhitelisted: true, // 多余属性传入抛403
-                forbidUnknownValues: true,
-                validationError: { target: false },
-            }),
-        )
+        @Query()
         options: QueryPostDto,
     ) {
         return this.service.paginate(options);
@@ -46,16 +37,7 @@ export class PostController {
 
     @Post()
     async store(
-        @Body(
-            new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidNonWhitelisted: true,
-                forbidUnknownValues: true,
-                validationError: { target: false },
-                groups: ['create'],
-            }),
-        )
+        @Body()
         data: CreatePostDto,
     ) {
         return this.service.create(data);
@@ -63,16 +45,7 @@ export class PostController {
 
     @Patch()
     async update(
-        @Body(
-            new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidNonWhitelisted: true,
-                forbidUnknownValues: true,
-                validationError: { target: false },
-                groups: ['update'],
-            }),
-        )
+        @Body()
         data: UpdatePostDto,
     ) {
         return this.service.update(data);

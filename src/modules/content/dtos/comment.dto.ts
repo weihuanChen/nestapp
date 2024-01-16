@@ -14,6 +14,7 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { DtoValidation } from '@/modules/core/decorators';
 import { PaginateOptions } from '@/modules/database/types';
 
 /**
@@ -45,6 +46,8 @@ export class QueryCommentTreeDto extends PickType(QueryCommentDto, ['post']) {}
 /**
  * 评论添加验证
  */
+// 由于评论没有更新，在创建评论的装饰器中直接不传选项即可
+@DtoValidation()
 export class CreateCommentDto {
     @MaxLength(1000, { message: '评论内容不能超过$constraint1个字' })
     @IsNotEmpty({ message: '评论内容不能为空' })
