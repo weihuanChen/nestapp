@@ -10,7 +10,7 @@ import {
 import { isObject } from 'class-validator';
 import { omit } from 'lodash';
 
-import { DTO_VALIDATION_OPTIONS } from '../constants';
+import { DTO_VALIDATION_OPTIONS } from '../constraints';
 import { deepMerge } from '../helpers';
 
 /**

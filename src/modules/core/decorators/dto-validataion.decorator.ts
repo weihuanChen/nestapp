@@ -2,7 +2,7 @@ import { Paramtype, SetMetadata } from '@nestjs/common';
 import { ClassTransformOptions } from 'class-transformer';
 import { ValidatorOptions } from 'class-validator';
 
-import { DTO_VALIDATION_OPTIONS } from '../constants';
+import { DTO_VALIDATION_OPTIONS } from '../constraints';
 
 /**
  * 全局验证管道 DTO装饰器

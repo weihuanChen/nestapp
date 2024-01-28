@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 
+import { useContainer } from 'class-validator';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -15,6 +17,8 @@ async function bootstrap() {
         logger: ['error', 'warn'],
     });
     app.setGlobalPrefix('api');
+    // 使validator使用NestContainer
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
     // 启动输出
     await app.listen(3100, () => {
         console.log('api:http:localhost:3100');
