@@ -11,6 +11,8 @@ import {
     Delete,
 } from '@nestjs/common';
 
+import { DeleteDto } from '@/modules/restful/dtos/delete.dto';
+
 import { CreateTagDto, QueryCategoryDto, UpdateTagDto } from '../dtos';
 import { TagService } from '../services';
 
@@ -55,8 +57,9 @@ export class TagController {
     }
 
     @Delete(':id')
-    @SerializeOptions({})
-    async delete(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.delete(id);
+    @SerializeOptions({ groups: ['tag-list'] })
+    async delete(@Body() data: DeleteDto) {
+        const { ids } = data;
+        return this.service.delete(ids);
     }
 }

@@ -15,7 +15,10 @@ import {
 import { toNumber } from 'lodash';
 
 import { DtoValidation } from '@/modules/core/decorators';
+import { IsDataExist } from '@/modules/database/constraints/data.exist.constraint';
 import { PaginateOptions } from '@/modules/database/types';
+
+import { CommentEntity } from '../entities';
 
 /**
  * 评论分页查询验证
@@ -57,6 +60,9 @@ export class CreateCommentDto {
     @IsDefined({ message: 'ID必须指定' })
     post: string;
 
+    @IsDataExist(CommentEntity, {
+        message: '父评论不存在',
+    })
     @IsUUID(undefined, { always: true, message: 'ID格式错误' })
     @ValidateIf((value) => value.parent !== null && value.parent)
     @IsOptional({ always: true })

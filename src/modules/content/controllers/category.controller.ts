@@ -11,6 +11,8 @@ import {
     Patch,
 } from '@nestjs/common';
 
+import { DeleteDto } from '@/modules/restful/dtos/delete.dto';
+
 import { CreateCategoryDto, QueryCategoryDto, UpdateCategoryDto } from '../dtos';
 import { CategoryService } from '../services';
 
@@ -62,7 +64,8 @@ export class CategoryController {
 
     @Delete(':id')
     @SerializeOptions({ groups: ['category-detail'] })
-    async delete(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.delete(id);
+    async delete(@Body() data: DeleteDto) {
+        const { ids } = data;
+        return this.service.delete(ids);
     }
 }
