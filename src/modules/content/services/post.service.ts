@@ -13,6 +13,8 @@ import { CreatePostDto, QueryPostDto, UpdatePostDto } from '../dtos';
 import { PostEntity } from '../entities/post.entity';
 import { CategoryRepository, PostRepository, TagRepository } from '../repositories';
 
+import { SearchType } from '../types';
+
 import { CategoryService } from './category.service';
 // import { PostEntity } from '../types';
 
@@ -28,6 +30,7 @@ export class PostService {
         protected categoryRepository: CategoryRepository,
         protected categoryService: CategoryService,
         protected tagRepository: TagRepository,
+        protected search_type: SearchType = 'mysql',
     ) {}
 
     /**
@@ -166,7 +169,7 @@ export class PostService {
         options: FindParams,
         callback?: QueryHook<PostEntity>,
     ) {
-        const { category, tag, orderBy, isPublished, trashed } = options;
+        const { category, tag, orderBy, isPublished, trashed, search } = options;
         if (typeof isPublished === 'boolean') {
             isPublished
                 ? qb.where({
@@ -188,6 +191,9 @@ export class PostService {
             if (trashed === SelectTrashMode.ONLY) {
                 qb.where('post.deletedAt IS NOT NULL');
             }
+        }
+        if (!isNil(search)) {
+            this.buildSearchQuery(qb, search);
         }
 
         if (callback) return callback(qb);
@@ -233,5 +239,22 @@ export class PostService {
         return qb.where('category.id IN (:...ids)', {
             ids,
         });
+    }
+
+    /**
+     * 构建mysql全文搜索
+     * @param qb
+     * @param search
+     */
+    protected async buildSearchQuery(qb: SelectQueryBuilder<PostEntity>, search: string) {
+        qb.andWhere('title LIKE :search', { search: `%${search}` })
+            .orWhere('body LIKE :search', {
+                search: `%${search}`,
+            })
+            .orWhere('summary LIKE :search', { search: `%${search}` })
+            .orWhere('summary LIKE :search', { search: `%${search}` })
+            .orWhere('tags.name LIKE :search', { search: `%${search}` })
+            .orWhere('category.name LIKE :search', { search: `%${search}` });
+        return qb;
     }
 }

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
-import { database } from './config';
+import { database, content } from './config';
 import { ContentModule } from './modules/content/content.modules';
 import { CoreModule } from './modules/core/core.module';
 import { AppFilter, AppIntercepter, AppPipe } from './modules/core/providers';
@@ -10,7 +10,7 @@ import { DatabaseModule } from './modules/database/database.module';
 
 @Module({
     imports: [
-        ContentModule,
+        ContentModule.forRoot(content),
         // ExampleModule,
         CoreModule.forRoot({ config: { name: '3r' } }),
         DatabaseModule.forRoot(database),

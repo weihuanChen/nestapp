@@ -5,3 +5,7 @@ export interface PostEntity {
     summary?: string;
     body: string;
 }
+export type SearchType = 'mysql';
+export interface ContentConfig {
+    searchType?: SearchType;
+}

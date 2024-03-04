@@ -71,6 +71,14 @@ export class QueryPostDto implements PaginateOptions {
     @IsEnum(SelectTrashMode)
     @IsOptional()
     trashed?: SelectTrashMode;
+
+    /** 搜索 */
+    @MaxLength(100, {
+        always: true,
+        message: '搜索字符串长度不得超过$constraint1',
+    })
+    @IsOptional({ always: true })
+    search?: string;
 }
 
 /**
