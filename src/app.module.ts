@@ -7,6 +7,8 @@ import { ContentModule } from './modules/content/content.modules';
 import { CoreModule } from './modules/core/core.module';
 import { AppFilter, AppIntercepter, AppPipe } from './modules/core/providers';
 import { DatabaseModule } from './modules/database/database.module';
+import { meilli } from './modules/meilisearch/meilli.config';
+import { MeilliModule } from './modules/meilisearch/meilli.module';
 
 @Module({
     imports: [
@@ -14,6 +16,7 @@ import { DatabaseModule } from './modules/database/database.module';
         // ExampleModule,
         CoreModule.forRoot({ config: { name: '3r' } }),
         DatabaseModule.forRoot(database),
+        MeilliModule.forRoot(meilli),
     ],
     // controllers: [AppController],
     providers: [

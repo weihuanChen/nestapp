@@ -1,4 +1,4 @@
-import { unset } from 'lodash';
+import { isNil, unset } from 'lodash';
 import { TreeRepository, FindTreeOptions, FindOptionsUtils } from 'typeorm';
 
 import { CustomRepository } from '@/modules/database/decorators';
@@ -73,6 +73,17 @@ export class CategoryRepository extends TreeRepository<CategoryEntity> {
             data.push(item);
             data.push(...(await this.toFlatTrees(children, depth + 1, item)));
         }
+        return data as CategoryEntity[];
+    }
+
+    async flatAncestorsTree(item: CategoryEntity) {
+        let data: Omit<CategoryEntity, 'children'>[] = [];
+        const category = await this.findAncestorsTree(item);
+        const { parent } = category;
+        unset(category, 'children');
+        unset(category, 'parent');
+        data.push(item);
+        if (!isNil(parent)) data = [...(await this.flatAncestorsTree(parent)), ...data];
         return data as CategoryEntity[];
     }
 }
