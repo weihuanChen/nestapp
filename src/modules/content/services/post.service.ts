@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { isNil, isFunction, omit, isArray } from 'lodash';
+import { isNil, isFunction, omit, isArray, pick } from 'lodash';
 
 import { EntityNotFoundError, SelectQueryBuilder, Not, IsNull, In } from 'typeorm';
 
@@ -16,6 +16,7 @@ import { CategoryRepository, PostRepository, TagRepository } from '../repositori
 import { SearchType } from '../types';
 
 import { CategoryService } from './category.service';
+import { SearchService } from './search.service';
 // import { PostEntity } from '../types';
 
 // 文章查询接口
@@ -30,6 +31,7 @@ export class PostService {
         protected categoryRepository: CategoryRepository,
         protected categoryService: CategoryService,
         protected tagRepository: TagRepository,
+        protected searchService?: SearchService,
         protected search_type: SearchType = 'mysql',
     ) {}
 
@@ -39,6 +41,13 @@ export class PostService {
      * @param callback 添加额外的查询
      */
     async paginate(options: QueryPostDto, callback?: QueryHook<PostEntity>) {
+        if (!isNil(this.searchService) && !isNil(options.search) && this.search_type === 'meilli') {
+            return this.searchService.search(
+                options.search,
+                pick(options, ['trashed', 'page', 'limit']),
+            );
+        }
+
         const qb = await this.buildListQuery(this.repository.buildBaseQB(), options, callback);
         return paginate(qb, options);
     }
@@ -77,7 +86,10 @@ export class PostService {
         };
         const item = await this.repository.save(createPostDto);
 
-        return this.detail(item.id);
+        const result = await this.detail(item.id);
+        if (!isNil(this.searchService)) await this.searchService.create(result);
+
+        return result;
     }
 
     /**
@@ -120,13 +132,22 @@ export class PostService {
         if (trash) {
             // 对已软删除的数据再次删除时直接通过remove方法从数据库中清除
             const directs = items.filter((item) => !isNil(item.deletedAt));
+            // 直接删除的数据
+            const directIds = directs.map(({ id }) => id);
             const softs = items.filter((item) => isNil(item.deletedAt));
             result = [
                 ...(await this.repository.remove(directs)),
                 ...(await this.repository.softRemove(softs)),
             ];
+            if (!isNil(this.searchService)) {
+                await this.searchService.delete(directIds);
+                await this.searchService.update(softs);
+            }
         } else {
             result = await this.repository.remove(items);
+            if (!isNil(this.searchService)) {
+                await this.searchService.delete(ids);
+            }
         }
         return result;
     }
@@ -147,11 +168,12 @@ export class PostService {
         if (trasheds.length < 1) return [];
 
         await this.repository.restore(trashedsIds);
+        await this.searchService.update(trasheds);
         const qb = await this.buildListQuery(
             this.repository.buildBaseQB(),
             {},
             async (qbuilder) => {
-                return qbuilder.andWhere('post.id IN (:...ids)', { ids: trashedsIds });
+                return qbuilder.andWhereInIds(trashedsIds);
             },
         );
 

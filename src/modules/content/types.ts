@@ -7,7 +7,7 @@ export interface PostEntity {
     summary?: string;
     body: string;
 }
-export type SearchType = 'mysql';
+export type SearchType = 'mysql' | 'meilli';
 export interface ContentConfig {
     searchType?: SearchType;
 }
