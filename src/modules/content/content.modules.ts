@@ -33,7 +33,7 @@ import { ContentConfig } from './types';
 export class ContentModule {
     static forRoot(configRegister?: () => ContentConfig): DynamicModule {
         const config: Required<ContentConfig> = {
-            searchType: 'mysql',
+            searchType: 'against',
             ...(configRegister ? configRegister() : {}),
         };
         const providers: ModuleMetadata['providers'] = [
@@ -47,23 +47,27 @@ export class ContentModule {
                     repositories.CategoryRepository,
                     services.CategoryService,
                     repositories.TagRepository,
+                    { token: services.SearchService, optional: true }, // 注册搜索服务
                 ],
                 useFactory(
                     postRepository: repositories.PostRepository,
                     categoryRepository: repositories.CategoryRepository,
                     categoryService: services.CategoryService,
                     tagRepository: repositories.TagRepository,
+                    searchService: services.SearchService,
                 ) {
                     return new PostService(
                         postRepository,
                         categoryRepository,
                         categoryService,
                         tagRepository,
+                        searchService,
                         config.searchType,
                     );
                 },
             },
         ];
+        if (config.searchType === 'meilli') providers.push(services.SearchService);
         return {
             module: ContentModule,
             imports: [

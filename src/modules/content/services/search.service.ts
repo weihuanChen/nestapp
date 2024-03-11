@@ -8,8 +8,13 @@ import { MeilliService } from '@/modules/meilisearch/meilli.service';
 import { PostEntity } from '../entities';
 import { getSearchData, getSearchItem } from '../helpers';
 import { CategoryRepository, CommentRepository, PostRepository } from '../repositories';
-import { SearchOption } from '../types';
 
+export interface SearchOption {
+    trashed?: SelectTrashMode;
+    isPublished?: boolean;
+    page?: number;
+    limit?: number;
+}
 @Injectable()
 export class SearchService implements OnModuleInit {
     index = 'content';

@@ -32,7 +32,7 @@ export class PostService {
         protected categoryService: CategoryService,
         protected tagRepository: TagRepository,
         protected searchService?: SearchService,
-        protected search_type: SearchType = 'mysql',
+        protected search_type: SearchType = 'against',
     ) {}
 
     /**
